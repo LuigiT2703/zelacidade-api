@@ -14,8 +14,8 @@ API REST do **ZelaCidade**: o cidadão relata um problema de zeladoria (buraco, 
 
 | O quê | Link |
 |---|---|
-| API no ar (Render) | `[LINK DO RENDER]` |
-| Repositório | `[LINK DO GITHUB]` |
+| API no ar (Render) | https://zelacidade-api.onrender.com |
+| Repositório | https://github.com/LuigiT2703/zelacidade-api |
 | Front-end (React) | `[LINK DO FRONT]` |
 | Vídeo | `[LINK DO VÍDEO]` |
 

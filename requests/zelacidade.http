@@ -1,5 +1,5 @@
 ### ZelaCidade API - requisições para testar (VS Code: extensão REST Client; IntelliJ: abre direto)
-### Troque o @base pela URL do Render para testar a API publicada.
+### Para testar a API publicada, troque o @base por: https://zelacidade-api.onrender.com
 @base = http://localhost:8080
 
 ### Início (mostra que a API está no ar)
