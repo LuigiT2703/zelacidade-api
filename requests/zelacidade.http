@@ -1,0 +1,209 @@
+### ZelaCidade API - requisições para testar (VS Code: extensão REST Client; IntelliJ: abre direto)
+### Troque o @base pela URL do Render para testar a API publicada.
+@base = http://localhost:8080
+
+### Início (mostra que a API está no ar)
+GET {{base}}/
+
+############################ OCORRÊNCIAS (contrato) ############################
+
+### Listar todas
+GET {{base}}/ocorrencias
+
+### Buscar uma
+GET {{base}}/ocorrencias/1
+
+### Cadastrar (201 + Location)
+POST {{base}}/ocorrencias
+Content-Type: application/json
+
+{
+  "categoria": "ALAGAMENTO_BUEIRO",
+  "descricao": "Bueiro sem tampa na calçada em frente à escola municipal",
+  "bairro": "Jardim São Luís",
+  "gravidade": 5,
+  "pessoasAfetadas": 200,
+  "pertoServicoEssencial": true,
+  "afetaAcessibilidade": true,
+  "nomeCidadao": "Ana Lima"
+}
+
+### Calçada força acessibilidade = true (RN04), mesmo mandando false
+POST {{base}}/ocorrencias
+Content-Type: application/json
+
+{
+  "categoria": "CALCADA_ACESSIBILIDADE",
+  "descricao": "Rampa da calçada quebrada em frente ao mercado",
+  "bairro": "Campo Limpo",
+  "gravidade": 3,
+  "pessoasAfetadas": 80,
+  "pertoServicoEssencial": false,
+  "afetaAcessibilidade": false,
+  "nomeCidadao": "Paulo Mendes"
+}
+
+### Atualizar (PUT) - troque o id
+PUT {{base}}/ocorrencias/6
+Content-Type: application/json
+
+{
+  "categoria": "ARVORE_PODA",
+  "descricao": "Galho seco grande pendurado sobre a fiação elétrica da rua",
+  "bairro": "Capão Redondo",
+  "gravidade": 4,
+  "pessoasAfetadas": 60,
+  "pertoServicoEssencial": false,
+  "afetaAcessibilidade": false,
+  "status": "ABERTA"
+}
+
+### Remover (204) - use o id de uma ocorrência que você criou
+DELETE {{base}}/ocorrencias/7
+
+############################ HISTÓRICO (1:N) ############################
+
+### Listar o histórico de uma ocorrência
+GET {{base}}/ocorrencias/2/atualizacoes
+
+### Registrar atualização = mudar o status (201 + Location)
+POST {{base}}/ocorrencias/3/atualizacoes
+Content-Type: application/json
+
+{ "status": "EM_ANDAMENTO", "comentario": "Equipe agendada para quinta-feira.", "responsavel": "Subprefeitura - calçadas" }
+
+### Buscar / corrigir texto / remover uma linha do histórico (rotas extras)
+GET {{base}}/atualizacoes/1
+
+###
+PUT {{base}}/atualizacoes/1
+Content-Type: application/json
+
+{ "comentario": "Equipe da Ilume agendada para quinta-feira de manhã.", "responsavel": "Iluminação pública (Ilume)" }
+
+###
+DELETE {{base}}/atualizacoes/1
+
+############################ APOIOS ############################
+
+### Apoiar (201 + total de apoios)
+POST {{base}}/ocorrencias/3/apoios
+Content-Type: application/json
+
+{ "nome": "Marta Gomes" }
+
+### Listar apoios de uma ocorrência (só ids, LGPD)
+GET {{base}}/ocorrencias/1/apoios
+
+### Buscar / corrigir / remover um apoio (rotas extras)
+GET {{base}}/apoios/1
+
+###
+PUT {{base}}/apoios/1
+Content-Type: application/json
+
+{ "nome": "Roberto Dias" }
+
+###
+DELETE {{base}}/apoios/1
+
+############################ CIDADÃOS (rotas extras) ############################
+
+GET {{base}}/cidadaos
+
+###
+GET {{base}}/cidadaos/1
+
+###
+POST {{base}}/cidadaos
+Content-Type: application/json
+
+{ "nome": "Helena Prado" }
+
+###
+PUT {{base}}/cidadaos/13
+Content-Type: application/json
+
+{ "nome": "Helena Prado Souza" }
+
+###
+DELETE {{base}}/cidadaos/13
+
+############################ ERROS (todos devolvem { status, mensagem }) ############################
+
+### 400 - validação (gravidade 9 e descrição curta)
+POST {{base}}/ocorrencias
+Content-Type: application/json
+
+{ "categoria": "OUTRO", "descricao": "curta", "bairro": "Sé", "gravidade": 9, "pessoasAfetadas": 0,
+  "pertoServicoEssencial": true, "afetaAcessibilidade": false, "nomeCidadao": "A" }
+
+### 400 - enum inválido
+POST {{base}}/ocorrencias
+Content-Type: application/json
+
+{ "categoria": "VULCAO", "descricao": "Descrição com mais de dez letras", "bairro": "Sé Centro", "gravidade": 3,
+  "pessoasAfetadas": 10, "pertoServicoEssencial": true, "afetaAcessibilidade": false, "nomeCidadao": "Ana" }
+
+### 400 - JSON malformado
+POST {{base}}/ocorrencias
+Content-Type: application/json
+
+{ "categoria": "OUTRO", "descricao": }
+
+### 400 - status igual ao atual
+POST {{base}}/ocorrencias/1/atualizacoes
+Content-Type: application/json
+
+{ "status": "ABERTA", "comentario": "Tentando mudar para o mesmo status.", "responsavel": "Teste" }
+
+### 400 - id que não é número
+GET {{base}}/ocorrencias/abc
+
+### 404 - id inexistente
+GET {{base}}/ocorrencias/9999
+
+### 404 - rota inexistente
+GET {{base}}/naoexiste
+
+### 405 - método não suportado
+PATCH {{base}}/ocorrencias/1
+
+### 409 - duplicada pendente (rode duas vezes o primeiro POST)
+POST {{base}}/ocorrencias
+Content-Type: application/json
+
+{
+  "categoria": "BURACO_NA_VIA",
+  "descricao": "buraco grande na faixa de onibus, em frente ao ponto da estrada de itapecerica",
+  "bairro": "capao redondo",
+  "gravidade": 4,
+  "pessoasAfetadas": 100,
+  "pertoServicoEssencial": true,
+  "afetaAcessibilidade": false,
+  "nomeCidadao": "Outra Pessoa"
+}
+
+### 409 - apoio repetido (joao lima já apoiou a #1)
+POST {{base}}/ocorrencias/1/apoios
+Content-Type: application/json
+
+{ "nome": "  JOAO   lima " }
+
+### 409 - quem registrou tentando apoiar (maria souza registrou a #1)
+POST {{base}}/ocorrencias/1/apoios
+Content-Type: application/json
+
+{ "nome": "Maria Souza" }
+
+### 409 - apoiar ocorrência resolvida (#5)
+POST {{base}}/ocorrencias/5/apoios
+Content-Type: application/json
+
+{ "nome": "Pessoa Nova" }
+
+### 409 - excluir ocorrência resolvida (#5)
+DELETE {{base}}/ocorrencias/5
+
+### 409 - remover cidadão com ocorrências (filhos)
+DELETE {{base}}/cidadaos/1
