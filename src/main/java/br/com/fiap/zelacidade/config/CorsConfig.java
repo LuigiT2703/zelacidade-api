@@ -10,8 +10,8 @@ import java.util.List;
 
 /**
  * CORS: diz ao navegador quais sites podem chamar esta API.
- * Liberamos o front local (Vite: 5173 no dev e 4173 no preview) e a URL da Vercel,
- * que vem da variável de ambiente FRONT_URL.
+ * Liberamos o front local (Vite: 5173 no dev e 4173 no preview), os sites publicados na Vercel
+ * (*.vercel.app) e qualquer outra URL que venha da variável de ambiente FRONT_URL.
  */
 @Configuration
 public class CorsConfig implements WebMvcConfigurer {
@@ -24,7 +24,7 @@ public class CorsConfig implements WebMvcConfigurer {
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
-        List<String> origens = new ArrayList<>(List.of("http://localhost:5173", "http://localhost:4173"));
+        List<String> origens = new ArrayList<>(List.of("http://localhost:5173", "http://localhost:4173", "https://*.vercel.app"));
         // FRONT_URL pode ter mais de uma URL separada por vírgula; tiramos a barra do fim
         for (String url : frontUrl.split(",")) {
             String limpa = url.trim().replaceAll("/+$", "");
@@ -33,7 +33,7 @@ public class CorsConfig implements WebMvcConfigurer {
             }
         }
         registry.addMapping("/**")
-                .allowedOrigins(origens.toArray(String[]::new))
+                .allowedOriginPatterns(origens.toArray(String[]::new))
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                 .allowedHeaders("Content-Type")
                 .exposedHeaders("Location");   // o front consegue ler o Location do 201
