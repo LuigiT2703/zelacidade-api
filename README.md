@@ -16,8 +16,8 @@ API REST do **ZelaCidade**: o cidadão relata um problema de zeladoria (buraco, 
 |---|---|
 | API no ar (Render) | https://zelacidade-api.onrender.com |
 | Repositório | https://github.com/LuigiT2703/zelacidade-api |
-| Front-end (React) | `[LINK DO FRONT]` |
-| Vídeo | `[LINK DO VÍDEO]` |
+| Front-end (React) | https://zelacidade-taupe.vercel.app |
+| Vídeo | https://youtu.be/niNSdYTE_h8 |
 
 > O plano gratuito do Render "dorme" sem uso. A **primeira** chamada do dia pode levar uns 50 segundos. Depois disso, tudo responde na hora.
 
